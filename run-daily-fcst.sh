@@ -6,6 +6,7 @@ LID_NLE=`date -d '-2 days ago' +%Y-%m-%d` # 3 days later, for forecast
 
 WPSDIR=/home/lzhenn/package/WPS
 WRFDIR=/home/lzhenn/array/lzhenn/WRFV3/run
+WORKDIR=/home/lzhenn/workspace/wrf-sdpwfe
 LOGFILE=/home/lzhenn/workspace/wrf-sdpwfe/sys-log/${LID}.log
 GFSDIR=/home/lzhenn/array/lzhenn/gfs_fcst/$LID
 
@@ -79,3 +80,10 @@ ln -sf $WPSDIR/met_em.d0* ./
 
 echo "Working on WRF->WRF..."
 mpirun -np 18 ./wrf.exe
+
+############## POST-PROCESS ##################
+echo "Post-processing..."
+cd $WORKDIR
+sh post_process.sh
+
+
