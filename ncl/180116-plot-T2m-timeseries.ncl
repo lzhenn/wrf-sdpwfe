@@ -23,7 +23,7 @@ begin
 
     g_fig_name="../fig/T2m-home"
     g_fig_title="T2m @ home"
-
+    g_font=0.018
 
 	all_files = systemfunc ("ls "+wrfout_path)
     ctrl_in      = addfiles (all_files, "r")   ; note the "s" of addfile
@@ -40,7 +40,6 @@ begin
     lon2d = wrf_user_getvar(ctrl_in,"XLONG", 1)
     ctrl_var1@lat2d = lat2d
     ctrl_var1@lon2d = lon2d
-    printVarSummary(xtime)
     point=getind_latlon2d(lat2d,lon2d,lat0,lon0)
     cor_x=point(0,0)
     cor_y=point(0,1)
@@ -56,7 +55,7 @@ begin
     ;************************************************ 
     ; plotting parameters
     ;************************************************
-    wks   = gsn_open_wks ("png",g_fig_name)                 ; open workstation
+    wks   = gsn_open_wks ("x11",g_fig_name)                 ; open workstation
 
     res               = True                    ; plot mods desired
 
@@ -67,7 +66,7 @@ begin
     ;res@vpXF     = 0.15
 
     res@vpWidthF = 0.8
-    res@vpHeightF= 0.3
+    res@vpHeightF= 0.2
 
 
     ;res@trYMinF            = 0.9*min(var1_season_scmean)                ; Y axis limits
@@ -79,8 +78,8 @@ begin
     ;res@trXMaxF  = dimsizes(var1_season_seamean)-1                   ; max value on x-axis
     res@tmXBMode      = "Explicit" ; Define own tick mark labels.
     res@tiYAxisString = "T2m (degC)"
-    res@tmXBValues = ispan(0,lentime,12) ;interval
-    res@tmXBLabels = xtime(::12)    ;tick label
+    res@tmXBValues = ispan(0,lentime,24) ;interval
+    res@tmXBLabels = xtime(::24)    ;tick label
     res@xyMonoLineColor    = False             ; want colored lines
     res@xyLineColors       = (/"red","black"/) ; colors chosen
     res@xyLineThicknesses    = (/3.0,2.0,2.0,2.0,2.0/)      ; line thicknesses
@@ -90,8 +89,8 @@ begin
     res@tmXBMinorThicknessF = 4.0
     res@tmYLMinorThicknessF = 4.0
     res@tmBorderThicknessF = 4.0
-    res@tmXBLabelFontHeightF =0.022
-    res@tmYLLabelFontHeightF = 0.022
+    res@tmXBLabelFontHeightF = g_font
+    res@tmYLLabelFontHeightF = g_font
     ; Note that a colon is the default function code. We recommend
     ; setting default code to be a tilde (~) in your .hluresfile.
     ; See: http://www.ncl.ucar.edu/Document/Graphics/hlures.shtml
@@ -102,8 +101,7 @@ begin
     res@tiXAxisString = "Time"
    ;res@trYMinF            = 9*min(var1_season_seamean)                ; Y axis limits
     ;res@trYMaxF            = 1.1*max(var1_season_seamean)
-    print(ctrl_var1(:,cor_x, cor_y))
-    plot(0)  = gsn_csm_xy (wks, ispan(1,lentime,1),ctrl_var1(:,cor_x,cor_y),res)   ; create plot
+    plot(0)  = gsn_csm_xy (wks, ispan(0,lentime-1,1),ctrl_var1(:,cor_x,cor_y),res)   ; create plot
     draw(plot)
     frame(wks)
 
