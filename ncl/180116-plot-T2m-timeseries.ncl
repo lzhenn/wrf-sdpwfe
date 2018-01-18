@@ -49,13 +49,12 @@ begin
 
   
 	
-	wks = gsn_open_wks("png","../fig/t2m-home")       ; open file to plot 
+	wks = gsn_open_wks("png","../fig/T2m-home")       ; open file to plot 
 
 
     ;************************************************ 
     ; plotting parameters
     ;************************************************
-    wks   = gsn_open_wks ("x11",g_fig_name)                 ; open workstation
 
     res               = True                    ; plot mods desired
 
