@@ -2,7 +2,7 @@
 
 LID=`date -d '1 days ago' +%Y%m%d`
 LID_NLS=`date -d '1 days ago' +%Y-%m-%d`
-LID_NLE=`date -d '-2 days ago' +%Y-%m-%d` # 3 days later, for forecast
+LID_NLE=`date -d '-3 days ago' +%Y-%m-%d` # 4 days later, for forecast
 
 WPSDIR=/home/lzhenn/package/WPS
 WRFDIR=/home/lzhenn/array/lzhenn/WRFV3/run
@@ -16,7 +16,7 @@ GFSDIR=/home/lzhenn/array/lzhenn/gfs_fcst/$LID
 
 echo "Forecast ${LID_NLS} to ${LID_NLE}"
 echo "Fetching GFS data..."
-python fetch_gfs.py
+#python fetch_gfs.py
 
 ############## WPS ##################
 cd $WPSDIR 
@@ -55,13 +55,15 @@ echo "Working on WRF->REAL..."
 cd $WRFDIR
 
 YYYY_NLS=`date -d '1 days ago' +%Y`
-YYYY_NLE=`date -d '-2 days ago' +%Y`
+YYYY_NLE=`date -d '-3 days ago' +%Y` # 4 days later, for forecast
 
 MM_NLS=`date -d '1 days ago' +%m`
-MM_NLE=`date -d '-2 days ago' +%m`
+MM_NLE=`date -d '-3 days ago' +%m` # 4 days later, for forecast
+  
 
 DD_NLS=`date -d '1 days ago' +%d`
-DD_NLE=`date -d '-2 days ago' +%d`
+DD_NLE=`date -d '-3 days ago' +%d` # 4 days later, for forecast
+
 
 sed -i "/start_year/s/^.*$/ start_year                          = ${YYYY_NLS}, ${YYYY_NLS}, ${YYYY_NLS}, ${YYYY_NLS},/g" namelist.input
 sed -i "/end_year/s/^.*$/ end_year                            = ${YYYY_NLE}, ${YYYY_NLE}, ${YYYY_NLE}, ${YYYY_NLE},/g" namelist.input
