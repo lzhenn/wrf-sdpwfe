@@ -31,7 +31,6 @@ begin
     wrfout_path="/home/lzhenn/array/lzhenn/WRFV3/run/wrfout_d03*"
 
     g_fig_name="../fig/T2m-home"
-    g_fig_title="T2m @ home"
     g_font=0.012
     
     month_abbr = (/"","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep", \
@@ -42,7 +41,7 @@ begin
 	setfileoption("nc","SuppressClose",False) ; close too many files
 	ListSetType (ctrl_in, "cat")             ; concatenate or "merge" (default)
 
-	ctrl_var1_0  = wrf_user_getvar(ctrl_in,"T2", -1)  
+	ctrl_var1_0  = wrf_user_getvar(ctrl_in,"TSK", -1)  
 	ctrl_var2  = wrf_user_getvar(ctrl_in,"Q2", -1)  
 	ctrl_var3  = wrf_user_getvar(ctrl_in,"PSFC", -1)  
     
@@ -80,7 +79,7 @@ begin
 
   
 	
-	wks = gsn_open_wks("png","../fig/T2m-home")       ; open file to plot 
+	wks = gsn_open_wks("x11","../fig/T2m-home")       ; open file to plot 
 
 
     ;************************************************ 
@@ -146,12 +145,12 @@ begin
 
 
 
-    ctrl_var5  = wrf_user_getvar(ctrl_in,"SNOWH", -1)  
+    ctrl_var5  = wrf_user_getvar(ctrl_in,"SNOWNC", -1)  
     ctrl_var6  = wrf_user_getvar(ctrl_in,"RAINC", -1)  
 	ctrl_var7  = wrf_user_getvar(ctrl_in,"RAINNC", -1)  
     
     ctrl_var5  = ctrl_var5
-    ctrl_var6  = ctrl_var6+ctrl_var7
+    ctrl_var6  = 0.01*(ctrl_var6+ctrl_var7)
     ctrl_var6(1:lentime-1,:,:)=ctrl_var6(1:lentime-1,:,:)-ctrl_var6(0:lentime-2,:,:)
     ctrl_var5(1:lentime-1,:,:)=ctrl_var5(1:lentime-1,:,:)-ctrl_var5(0:lentime-2,:,:)
     res_snow = res
