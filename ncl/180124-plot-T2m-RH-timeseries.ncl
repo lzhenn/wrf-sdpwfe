@@ -145,16 +145,16 @@ begin
 
 
 
-    ctrl_var5  = wrf_user_getvar(ctrl_in,"SNOWNC", -1)  
+    ctrl_var5  = wrf_user_getvar(ctrl_in,"SNOWH", -1)  
     ctrl_var6  = wrf_user_getvar(ctrl_in,"RAINC", -1)  
 	ctrl_var7  = wrf_user_getvar(ctrl_in,"RAINNC", -1)  
     
-    ctrl_var5  = ctrl_var5
-    ctrl_var6  = 0.01*(ctrl_var6+ctrl_var7)
+    ctrl_var5  = ctrl_var5*100
+    ctrl_var6  = (ctrl_var6+ctrl_var7)
     ctrl_var6(1:lentime-1,:,:)=ctrl_var6(1:lentime-1,:,:)-ctrl_var6(0:lentime-2,:,:)
-    ctrl_var5(1:lentime-1,:,:)=ctrl_var5(1:lentime-1,:,:)-ctrl_var5(0:lentime-2,:,:)
+;    ctrl_var5(1:lentime-1,:,:)=ctrl_var5(1:lentime-1,:,:)-ctrl_var5(0:lentime-2,:,:)
     res_snow = res
-    res_snow@tiYAxisString = "Snow (mm)"
+    res_snow@tiYAxisString = "Snow Depth (mm)"
    
     res_snow@vpHeightF= 0.1
     res_snow@vpWidthF = 0.8
