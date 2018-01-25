@@ -79,7 +79,7 @@ begin
 
   
 	
-	wks = gsn_open_wks("x11","../fig/T2m-home")       ; open file to plot 
+	wks = gsn_open_wks("png","../fig/T2m-home")       ; open file to plot 
 
 
     ;************************************************ 
