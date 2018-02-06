@@ -149,7 +149,7 @@ begin
     ctrl_var6  = wrf_user_getvar(ctrl_in,"RAINC", -1)  
 	ctrl_var7  = wrf_user_getvar(ctrl_in,"RAINNC", -1)  
     
-    ctrl_var5  = ctrl_var5*10
+    ctrl_var5  = ctrl_var5*100
     ctrl_var6  = (ctrl_var6+ctrl_var7)
     ctrl_var6(1:lentime-1,:,:)=ctrl_var6(1:lentime-1,:,:)-ctrl_var6(0:lentime-2,:,:)
 ;    ctrl_var5(1:lentime-1,:,:)=ctrl_var5(1:lentime-1,:,:)-ctrl_var5(0:lentime-2,:,:)
