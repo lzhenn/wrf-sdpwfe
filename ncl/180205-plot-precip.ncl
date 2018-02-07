@@ -64,7 +64,7 @@ begin
 ;---Resources for filled contour plot
   
   res@cnLevelSelectionMode = "ExplicitLevels"   ; set manual contour levels
-  res@cnLevels =    (/0.1, 0.3, 0.5, 1, 2, 3, 5, 7, 9, 12, 15, 20, 25, 30, 40, 50/)
+  res@cnLevels =    (/0.1, 0.5, 1, 2, 3, 5, 8, 12, 16, 20, 25, 30, 40, 50, 70, 100, 150/)
   res@gsnMaximize          = True
   res@gsnFrame = False
   res@gsnDraw = False
@@ -92,7 +92,13 @@ begin
   ;res@lbLabelStride = 1  
   res@tmXBLabelFontHeightF = g_font
   res@tmYLLabelFontHeightF = g_font
- 
+  res@mpGridAndLimbOn        = True             ; Turn on lat/lon grid
+  res@mpGridLineDashPattern  = 2                ; Dashed lines
+  res@mpGridSpacingF         = 0.5
+  res@mpGridLineThicknessF   = 2.0
+;  res@mpGridLineColor        = "Gray30"
+
+
 res@mpOutlineOn             = False  ; Use outlines from shapefile
 res@cnFillDrawOrder         = "PreDraw"
 res@mpDataBaseVersion       = "MediumRes"
@@ -101,6 +107,7 @@ res@mpAreaMaskingOn         = True
 res@mpMaskAreaSpecifiers    = (/"China","Taiwan","Disputed area between India and China","India:Arunachal Pradesh"/)
 res@mpLandFillColor         = "white"
 res@mpInlandWaterFillColor  = "white"
+res@gsnRightString = "mm/3hr"
 ;>============================================================<
 ;                      add China map
 ;>------------------------------------------------------------<

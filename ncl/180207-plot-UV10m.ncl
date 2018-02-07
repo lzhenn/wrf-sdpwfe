@@ -25,10 +25,6 @@ begin
 	setfileoption("nc","SuppressClose",False) ; close too many files
 	ListSetType (ctrl_in, "cat")             ; concatenate or "merge" (default)
     
-    ; get rh2m
-    ctrl_var1  = wrf_user_getvar(ctrl_in,"SNOWH", -1)  
-    
-    ctrl_var1=ctrl_var1*100
     time0 = wrf_user_getvar(ctrl_in,"Times", -1)
     xtime = wrf_times_c( time0, 1 ) 
     xtime = xtime+8 
@@ -41,29 +37,43 @@ begin
     minute = tointeger(lc_date(:,4))
     second = lc_date(:,5)
 
-   date_str = month_abbr(month)+sprinti(" %0.2i ", day) + sprinti("%0.2iH", hour) 
+    date_str = month_abbr(month)+sprinti(" %0.2i ", day) + sprinti("%0.2iH", hour) 
               
 
-
     lentime=dimsizes(xtime)
+  	ctrl_var1  = wrf_user_getvar(ctrl_in,"U10", -1)  
+	ctrl_var2  = wrf_user_getvar(ctrl_in,"V10", -1)  
+    
+
+    
     lat2d = wrf_user_getvar(ctrl_in,"XLAT",  1)
     lon2d = wrf_user_getvar(ctrl_in,"XLONG", 1)
     ctrl_var1@lat2d = lat2d
     ctrl_var1@lon2d = lon2d
+    ctrl_var2@lat2d = lat2d
+    ctrl_var2@lon2d = lon2d
     point=getind_latlon2d(lat2d,lon2d,lat0,lon0)
     cor_x=point(0,0)
     cor_y=point(0,1)
+
+   
+    windspeed =  wind_speed(ctrl_var1, ctrl_var2)
+   
+   
    res                   = True              ; plot mods desired
 ;---Resources for filled contour plot
+  res@cnLevelSelectionMode  = "ManualLevels" ; set manual contour levels
+  res@cnMinLevelValF        = 0.          ; set min contour level
+  res@cnMaxLevelValF        = 34.          ; set max contour level
+  res@cnLevelSpacingF       = 2          ; set contour interval
   
-  res@cnLevelSelectionMode = "ExplicitLevels"   ; set manual contour levels
-  res@cnLevels =    (/0.1, 0.5, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 80/)
+  
   res@gsnMaximize          = True
   res@gsnFrame = False
   res@gsnDraw = False
   res@cnFillOn             = True  
   res@cnLinesOn            = False
-  res@cnLevelSpacingF      = 2.           ; NCL chose 4.0
+  ;res@cnLevelSpacingF      = 2.           ; NCL chose 4.0
   res@lbOrientation        = "Vertical"
 
 ;---Necessary for contours to be overlaid correctly on WRF projection
@@ -71,7 +81,7 @@ begin
   res@gsnAddCyclic         = False
   res@cnFillMode           = "CellFill" ; Raster Mode
   res@gsnSpreadColors      = True               ; use full color map
-  res@gsnRightString = "cm"
+  res@gsnRightString = "%"
   res@gsnStringFontHeightF = g_font 
   res@gsnMaximize      = True       ; fill up the page
   res@gsnPaperOrientation = "portrait"
@@ -100,7 +110,26 @@ res@mpAreaMaskingOn         = True
 res@mpMaskAreaSpecifiers    = (/"China","Taiwan","Disputed area between India and China","India:Arunachal Pradesh"/)
 res@mpLandFillColor         = "white"
 res@mpInlandWaterFillColor  = "white"
-;>============================================================<
+
+
+  resv                         = True               ; plot mods desired
+  resv@vcGlyphStyle            = "WindBarb"         ; choose wind barbs
+  resv@lbOrientation           = "vertical"         ; vertical label bar
+  resv@gsnDraw = False
+  resv@gsnFrame = False
+  resv@vcRefMagnitudeF         = 5.                ; make vectors larger
+  resv@vcRefLengthF            = 0.015              ; ref vec length
+  resv@vcMinDistanceF          = 0.03              ; thin out windbarbs
+  resv@vcWindBarbLineThicknessF = 3.
+  resv@vcWindBarbColor = "grey50"
+  resv@vcWindBarbTickLengthF   = 0.5                ; length of the barb tick
+  resv@vcWindBarbTickSpacingF  = 0.3                ; distance between ticks
+  resv@vcRefAnnoOn             = False              ; turn off ref wind barb
+  resv@gsnLeftString = ""
+  resv@gsnRightString= ""
+  resv@gsnAddCyclic            = False              ; regional data
+
+ ;>============================================================<
 ;                      add China map
 ;>------------------------------------------------------------<
   cnres           = True
@@ -124,39 +153,42 @@ res@mpInlandWaterFillColor  = "white"
 
   polymaxres=polyres
   polymaxres@gsMarkerIndex     = 5          ; polymarker style
-  polymaxres@gsMarkerColor     = "black"          ; polymarker size
+  polymaxres@gsMarkerColor     = "red"          ; polymarker size
   polymaxres@gsMarkerThicknessF     = 5.          ; polymarker size
 
 res = wrf_map_resources(ctrl_in[0],res)
 
 time_frame = 0
-do while(time_frame .lt. lentime-1)
+do while(time_frame .lt. lentime)
     ;---Set map resources based on projection on WRF output file
 
     ;************************************************
     ; create plot
     ;************************************************
     print("processing "+date_str(time_frame))
+    
     wks_type="png"
     wks_type@wkWidth=800
     wks_type@wkHeight=800
-    wks = gsn_open_wks(wks_type,"../fig/snow-cover_"+sprinti("%0.3iH", time_frame))      ; send graphics to PNG file
-    gsn_define_colormap(wks,"precip2_17lev")
-    res@gsnLeftString="Snow Depth @ "+date_str(time_frame)
+    wks = gsn_open_wks(wks_type,"../fig/Wind10m_"+sprinti("%0.3iH", time_frame))      ; send graphics to PNG file
+    gsn_define_colormap(wks,"wind_17lev")
+    res@gsnLeftString="10m Wind @ "+date_str(time_frame)
     ;---Call plotting routine which draws contours over a map
-    plot = gsn_csm_contour_map(wks,ctrl_var1(time_frame,:,:),res)
+    plot = gsn_csm_contour_map(wks,windspeed(time_frame,:,:),res)
+    plotv = gsn_csm_vector(wks, ctrl_var1(time_frame,:,:),ctrl_var2(time_frame,:,:), resv)
     chinamap = add_china_map(wks,plot,cnres)
     dum1    = gsn_add_polymarker(wks,plot,lon0,lat0,polyres)
 
-    dims=dimsizes(ctrl_var1(time_frame,:,:))
-    var1D=ndtooned(ctrl_var1(time_frame,:,:))
+    dims=dimsizes(windspeed(time_frame,:,:))
+    var1D=ndtooned(windspeed(time_frame,:,:))
     max_value=max(var1D)
     inds = ind_resolve(maxind (var1D), dims)    ; convert 1D array back to 2D 
     ilat = inds(0,0)        ; select the latitude index where the X array is at its' maximum  
     ilon = inds(0,1)        ; select the longitude index where the X array is at its' maximum
 
-    dum2    = gsn_add_text(wks,plot,sprintf("Snow Depth@Home: %3.1fcm~C~", ctrl_var1(time_frame, cor_x, cor_y))+sprintf("Max Snow Depth: %3.1fcm@(",ctrl_var1(time_frame, ilat, ilon))+sprintf("%5.2fE, ", lon2d(ilat, ilon))+sprintf("%5.2fN)", lat2d(ilat, ilon)),tlon,tlat,tres)
+    dum2    = gsn_add_text(wks,plot,sprintf("Wind10m@Home: %3.1fm/s~C~", windspeed(time_frame, cor_x, cor_y))+sprintf("Max 10m Wind: %3.1fm/s@(",windspeed(time_frame, ilat, ilon))+sprintf("%5.2fE, ", lon2d(ilat, ilon))+sprintf("%5.2fN)", lat2d(ilat, ilon)),tlon,tlat,tres)
     dummax    = gsn_add_polymarker(wks,plot,lon2d(ilat, ilon),lat2d(ilat, ilon),polymaxres)
+    overlay(plot, plotv)
     draw(plot)
     frame(wks)
     time_frame=time_frame+3
