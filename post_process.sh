@@ -18,6 +18,7 @@ mkdir $MAP_DIR
 
 cd $WORKDIR/ncl
 ncl 180124-plot-T2m-RH-timeseries.ncl 
+ncl 180212-plot-surface-wind-timeseries.ncl
 ncl 180205-plot-snow-cover.ncl
 ncl 180205-plot-precip.ncl
 ncl 180207-plot-T2m.ncl
@@ -29,6 +30,7 @@ cd $WORKDIR/fig
 
 # Cut borders
 convert T2m-home.png -bordercolor white -trim T2m-home.png
+convert Wind10m-home.png -bordercolor white -trim Wind10m-home.png
 
 
 #for((I=0;I<=31;I++))
@@ -47,6 +49,7 @@ convert -delay 100 Wind10m_* Wind10m.gif
 
 # Move realtime figures to repo
 cp T2m-home.png $TS_DIR 
+cp Wind10m-home.png $TS_DIR 
 mv snow-cover_* $MAP_DIR
 mv precip_* $MAP_DIR
 mv T2m_* $MAP_DIR
