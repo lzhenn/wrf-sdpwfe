@@ -18,6 +18,8 @@ mkdir $MAP_DIR
 
 cd $WORKDIR/ncl
 ncl 180124-plot-T2m-RH-timeseries.ncl 
+ncl 180212-plot-profile-timeseries.ncl
+ncl 180212-plot-cloud-profile-timeseries.ncl
 ncl 180212-plot-surface-wind-timeseries.ncl
 ncl 180205-plot-snow-cover.ncl
 ncl 180205-plot-precip.ncl
@@ -31,6 +33,8 @@ cd $WORKDIR/fig
 # Cut borders
 convert T2m-home.png -bordercolor white -trim T2m-home.png
 convert Wind10m-home.png -bordercolor white -trim Wind10m-home.png
+convert profile-home.png -bordercolor white -trim profile-home.png
+convert cloud-profile-home.png -bordercolor white -trim cloud-profile-home.png
 
 
 #for((I=0;I<=31;I++))
@@ -58,7 +62,7 @@ mv Wind10m_* $MAP_DIR
 
 cd $WORKDIR
 sh gitfresh.sh 
-
+exit
 #--------------------------------------------------------------
 #                 Second Phase: D01 D02 Maps
 #--------------------------------------------------------------
