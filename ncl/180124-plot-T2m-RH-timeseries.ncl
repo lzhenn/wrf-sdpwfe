@@ -79,7 +79,7 @@ begin
 
   
 	
-	wks = gsn_open_wks("png","../fig/T2m-home")       ; open file to plot 
+	wks = gsn_open_wks("x11","../fig/T2m-home")       ; open file to plot 
 
 
     ;************************************************ 
@@ -150,11 +150,14 @@ begin
 	ctrl_var7  = wrf_user_getvar(ctrl_in,"RAINNC", -1)  
 	
     ctrl_var8  = wrf_user_getvar(ctrl_in,"SNOWNC", -1)  
-	ctrl_var6  = wrf_user_getvar(ctrl_in,"HAILNC", -1)  
+	ctrl_var9  = wrf_user_getvar(ctrl_in,"HAILNC", -1)  
     
     ctrl_var5  = ctrl_var5*100
-    ctrl_var6  = (ctrl_var6+ctrl_var7)
+    ctrl_var6  = (ctrl_var6+ctrl_var7) ; Accumulate convective rainfall and non-convective rainfall
     ctrl_var6(1:lentime-1,:,:)=ctrl_var6(1:lentime-1,:,:)-ctrl_var6(0:lentime-2,:,:)
+    ctrl_var8(1:lentime-1,:,:)=ctrl_var8(1:lentime-1,:,:)-ctrl_var8(0:lentime-2,:,:)
+    ctrl_var9(1:lentime-1,:,:)=ctrl_var9(1:lentime-1,:,:)-ctrl_var9(0:lentime-2,:,:)
+
 ;    ctrl_var5(1:lentime-1,:,:)=ctrl_var5(1:lentime-1,:,:)-ctrl_var5(0:lentime-2,:,:)
     res_snow = res
     res_snow@tiYAxisString = "Snow Depth (cm)"
@@ -177,32 +180,36 @@ begin
   rfmkres                   = True
   rfmkres@gsMarkerIndex     = 1          ; polymarker style
   rfmkres@gsMarkerSizeF     = 11.          ; polymarker size
-  rfmkres@gsMarkerThicknessF     = 3.          ; polymarker size
+  rfmkres@gsMarkerThicknessF     = 5.          ; polymarker size
   rfmkres@gsMarkerColor     = "Blue"          ; polymarker size
 
   ; Snow Mark Res
   snmkres                   = True
   snmkres@gsMarkerIndex     = 0         ; polymarker style
   snmkres@gsMarkerSizeF     = 11.          ; polymarker size
-  snmkres@gsMarkerThicknessF     = 3.          ; polymarker size
-  snmkres@gsMarkerColor     = "gray30"          ; polymarker size
+  snmkres@gsMarkerThicknessF     = 5.          ; polymarker size
+  snmkres@gsMarkerColor     = "gray50"          ; polymarker size
 
   ; Hail Mark Res
   hlmkres                   = True
   hlmkres@gsMarkerIndex     = 7          ; polymarker style
   hlmkres@gsMarkerSizeF     = 11.          ; polymarker size
-  hlmkres@gsMarkerThicknessF     = 3.          ; polymarker size
+  hlmkres@gsMarkerThicknessF     = 5.          ; polymarker size
   hlmkres@gsMarkerColor     = "Red"          ; polymarker size
 
-    do ii=0, lentime-1
-        if mod(ii-4, 24) .eq. 0 then 
-            str=unique_string("")
-            plot@$str$=gsn_add_polyline(wks,plot(1),(/ii,ii/),(/res_snow@trYMinF, res_snow@trYMaxF/),res_line)
-        end if
-    end do
-    
+  hratio = 0.8
+  do ii=0, lentime-1
+      if (ctrl_var8(ii,cor_x, cor_y) .gt. 0.01) then 
+          str=unique_string("")
+          plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, snmkres)
+      end if
+      if ((ctrl_var6(ii,cor_x, cor_y)-ctrl_var8(ii, cor_x, cor_y)-ctrl_var9(ii,cor_x, cor_y)) .gt. 0.01) then 
+          str=unique_string("")
+          plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, rfmkres)
+      end if
 
-
-    gsn_panel(wks, plot, (/2,1/), False)
+  end do
+  
+  gsn_panel(wks, plot, (/2,1/), False)
 
 end
