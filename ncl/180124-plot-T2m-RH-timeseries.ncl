@@ -148,6 +148,9 @@ begin
     ctrl_var5  = wrf_user_getvar(ctrl_in,"SNOWH", -1)  
     ctrl_var6  = wrf_user_getvar(ctrl_in,"RAINC", -1)  
 	ctrl_var7  = wrf_user_getvar(ctrl_in,"RAINNC", -1)  
+	
+    ctrl_var8  = wrf_user_getvar(ctrl_in,"SNOWNC", -1)  
+	ctrl_var6  = wrf_user_getvar(ctrl_in,"HAILNC", -1)  
     
     ctrl_var5  = ctrl_var5*100
     ctrl_var6  = (ctrl_var6+ctrl_var7)
@@ -169,6 +172,28 @@ begin
     res_pr@trYMaxF=max(ctrl_var6(:,cor_x,cor_y))+0.1
     res_pr@gsnXYBarChartColors := (/"skyblue"/)             ; below ref line fill blue
     plot(1)  = gsn_csm_xy2 (wks, ispan(0,lentime-1,1),ctrl_var5(:,cor_x,cor_y),ctrl_var6(:,cor_x,cor_y),res_snow, res_pr)   ; create plot
+
+  ; Rainfall Mark Res
+  rfmkres                   = True
+  rfmkres@gsMarkerIndex     = 1          ; polymarker style
+  rfmkres@gsMarkerSizeF     = 11.          ; polymarker size
+  rfmkres@gsMarkerThicknessF     = 3.          ; polymarker size
+  rfmkres@gsMarkerColor     = "Blue"          ; polymarker size
+
+  ; Snow Mark Res
+  snmkres                   = True
+  snmkres@gsMarkerIndex     = 0         ; polymarker style
+  snmkres@gsMarkerSizeF     = 11.          ; polymarker size
+  snmkres@gsMarkerThicknessF     = 3.          ; polymarker size
+  snmkres@gsMarkerColor     = "gray30"          ; polymarker size
+
+  ; Hail Mark Res
+  hlmkres                   = True
+  hlmkres@gsMarkerIndex     = 7          ; polymarker style
+  hlmkres@gsMarkerSizeF     = 11.          ; polymarker size
+  hlmkres@gsMarkerThicknessF     = 3.          ; polymarker size
+  hlmkres@gsMarkerColor     = "Red"          ; polymarker size
+
     do ii=0, lentime-1
         if mod(ii-4, 24) .eq. 0 then 
             str=unique_string("")
@@ -176,6 +201,8 @@ begin
         end if
     end do
     
+
+
     gsn_panel(wks, plot, (/2,1/), False)
 
 end
