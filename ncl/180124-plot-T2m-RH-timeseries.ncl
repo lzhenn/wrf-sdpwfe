@@ -79,7 +79,7 @@ begin
 
   
 	
-	wks = gsn_open_wks("x11","../fig/T2m-home")       ; open file to plot 
+	wks = gsn_open_wks("png","../fig/T2m-home")       ; open file to plot 
 
 
     ;************************************************ 
@@ -105,7 +105,7 @@ begin
     res@tmXTOn = False
     ;res@trYMinF            = 3.5                ; Y axis limits
     ;res@trYMaxF            = 6.5
-    ;res@trXMaxF  = dimsizes(var1_season_seamean)-1                   ; max value on x-axis
+    res@trXMaxF  = lentime-1                   ; max value on x-axis
     res@tiYAxisFontHeightF=g_font
     res@tiYAxisString = "T2m (degC)"
     res@xyMonoLineColor    = False             ; want colored lines
@@ -143,6 +143,8 @@ begin
         end if
     end do
 
+    str=unique_string("")
+    plot@$str$=gsn_add_polyline(wks,plot(0),(/ii,ii/),(/res@trYMinF, res@trYMaxF/),res_line)
 
 
     ctrl_var5  = wrf_user_getvar(ctrl_in,"SNOWH", -1)  
@@ -150,16 +152,19 @@ begin
 	ctrl_var7  = wrf_user_getvar(ctrl_in,"RAINNC", -1)  
 	
     ctrl_var8  = wrf_user_getvar(ctrl_in,"SNOWNC", -1)  
-	ctrl_var9  = wrf_user_getvar(ctrl_in,"HAILNC", -1)  
+    ctrl_var9  = wrf_user_getvar(ctrl_in,"HAILNC", -1)  
+    ctrl_var10  = wrf_user_getvar(ctrl_in,"GRAUPELNC", -1)  
     
     ctrl_var5  = ctrl_var5*100
     ctrl_var6  = (ctrl_var6+ctrl_var7) ; Accumulate convective rainfall and non-convective rainfall
     ctrl_var6(1:lentime-1,:,:)=ctrl_var6(1:lentime-1,:,:)-ctrl_var6(0:lentime-2,:,:)
     ctrl_var8(1:lentime-1,:,:)=ctrl_var8(1:lentime-1,:,:)-ctrl_var8(0:lentime-2,:,:)
     ctrl_var9(1:lentime-1,:,:)=ctrl_var9(1:lentime-1,:,:)-ctrl_var9(0:lentime-2,:,:)
+    ctrl_var10(1:lentime-1,:,:)=ctrl_var10(1:lentime-1,:,:)-ctrl_var10(0:lentime-2,:,:)
 
 ;    ctrl_var5(1:lentime-1,:,:)=ctrl_var5(1:lentime-1,:,:)-ctrl_var5(0:lentime-2,:,:)
     res_snow = res
+    delete(res_snow@trXMaxF)
     res_snow@tiYAxisString = "Snow Depth (cm)"
    
     res_snow@vpHeightF= 0.1
@@ -180,36 +185,51 @@ begin
   rfmkres                   = True
   rfmkres@gsMarkerIndex     = 1          ; polymarker style
   rfmkres@gsMarkerSizeF     = 11.          ; polymarker size
-  rfmkres@gsMarkerThicknessF     = 5.          ; polymarker size
+  rfmkres@gsMarkerThicknessF     = 4.          ; polymarker size
   rfmkres@gsMarkerColor     = "Blue"          ; polymarker size
 
   ; Snow Mark Res
-  snmkres                   = True
+  snmkres                   = rfmkres
   snmkres@gsMarkerIndex     = 0         ; polymarker style
-  snmkres@gsMarkerSizeF     = 11.          ; polymarker size
-  snmkres@gsMarkerThicknessF     = 5.          ; polymarker size
   snmkres@gsMarkerColor     = "gray50"          ; polymarker size
 
   ; Hail Mark Res
-  hlmkres                   = True
+  hlmkres                   = rfmkres 
   hlmkres@gsMarkerIndex     = 7          ; polymarker style
-  hlmkres@gsMarkerSizeF     = 11.          ; polymarker size
-  hlmkres@gsMarkerThicknessF     = 5.          ; polymarker size
   hlmkres@gsMarkerColor     = "Red"          ; polymarker size
 
-  hratio = 0.8
+  ; Graupel Mark Res
+  gpmkres                   = rfmkres 
+  gpmkres@gsMarkerIndex     = 7          ; polymarker style
+  gpmkres@gsMarkerColor     = "skyblue"          ; polymarker size
+
+
+  hratio = 0.9
   do ii=0, lentime-1
       if (ctrl_var8(ii,cor_x, cor_y) .gt. 0.01) then 
           str=unique_string("")
           plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, snmkres)
       end if
-      if ((ctrl_var6(ii,cor_x, cor_y)-ctrl_var8(ii, cor_x, cor_y)-ctrl_var9(ii,cor_x, cor_y)) .gt. 0.01) then 
+      if (ctrl_var9(ii,cor_x, cor_y) .gt. 0.01) then 
+          str=unique_string("")
+          plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, hlmkres)
+      end if
+      if (ctrl_var10(ii,cor_x, cor_y) .gt. 0.01) then 
+          str=unique_string("")
+          plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, gpmkres)
+      end if
+ 
+      if ((ctrl_var6(ii,cor_x, cor_y)-ctrl_var8(ii, cor_x, cor_y)-ctrl_var9(ii,cor_x, cor_y)-ctrl_var10(ii, cor_x, cor_y)) .gt. 0.01) then 
           str=unique_string("")
           plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, rfmkres)
       end if
-
+      ; Specific time marker
+      if mod(ii-4, 24) .eq. 0 then 
+          str=unique_string("")
+          plot@$str$=gsn_add_polyline(wks,plot(1),(/ii,ii/),(/res_snow@trYMinF, res_snow@trYMaxF/),res_line)
+      end if
   end do
-  
+ 
   gsn_panel(wks, plot, (/2,1/), False)
 
 end
