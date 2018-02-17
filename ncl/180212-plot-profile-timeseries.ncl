@@ -82,7 +82,6 @@ begin
     ctrl_var3 := transpose(int2p_Wrap(zin, ctrl_var3, z_raob, linlog))
     ctrl_var1@_FillValue = -999.0
     ;ctrl_var1(:,::3) =ctrl_var1@_FillValue
-    printVarSummary(ctrl_var3)
 ;***********************************************
 ;  open a workstation and define colormap using rgb triplets
 ;***********************************************

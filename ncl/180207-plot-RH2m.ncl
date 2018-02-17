@@ -151,7 +151,6 @@ do while(time_frame .lt. lentime)
     ;************************************************
     ; create plot
     ;************************************************
-    print("processing "+date_str(time_frame))
     
     wks_type="png"
     wks_type@wkWidth=800

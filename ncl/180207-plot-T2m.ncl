@@ -163,7 +163,6 @@ do while(time_frame .lt. lentime)
     ;************************************************
     ; create plot
     ;************************************************
-    print("processing "+date_str(time_frame))
     
     ctrl_var1(time_frame,:,:)=where(ctrl_land .eq. 2, ctrl_var1@_FillValue, ctrl_var1(time_frame,:,:))
     wks_type="png"

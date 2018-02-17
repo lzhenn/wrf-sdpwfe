@@ -16,19 +16,22 @@ mkdir $MAP_DIR
 #       First Phase: Core D03 Map and Home Timeseries
 #--------------------------------------------------------------
 
+echo "Phase I: plot..."
 cd $WORKDIR/ncl
-ncl 180124-plot-T2m-RH-timeseries.ncl 
-ncl 180212-plot-profile-timeseries.ncl
-ncl 180212-plot-cloud-profile-timeseries.ncl
-ncl 180212-plot-surface-wind-timeseries.ncl
-ncl 180205-plot-snow-cover.ncl
-ncl 180205-plot-precip.ncl
-ncl 180207-plot-T2m.ncl
-ncl 180207-plot-RH2m.ncl
-ncl 180207-plot-UV10m.ncl
+ncl -nQ 180124-plot-T2m-RH-timeseries.ncl & 
+ncl -nQ 180212-plot-profile-timeseries.ncl &
+ncl -nQ  180212-plot-cloud-profile-timeseries.ncl &
+ncl -nQ  180212-plot-surface-wind-timeseries.ncl &
+ncl -nQ  180205-plot-snow-cover.ncl &
+ncl -nQ  180205-plot-precip.ncl &
+ncl -nQ  180207-plot-T2m.ncl &
+ncl -nQ  180207-plot-RH2m.ncl &
+ncl -nQ  180207-plot-UV10m.ncl &
+wait
 
 cd $WORKDIR/fig
 
+echo "Phase I: convert..."
 
 # Cut borders
 convert T2m-home.png -bordercolor white -trim T2m-home.png
@@ -45,13 +48,15 @@ convert cloud-profile-home.png -bordercolor white -trim cloud-profile-home.png
 #done
 
 # convert gif
-convert -delay 100 snow-cover_* snow-cover.gif
-convert -delay 100 precip_* precip.gif
-convert -delay 100 T2m_* T2m.gif
-convert -delay 100 RH2m_* RH2m.gif
-convert -delay 100 Wind10m_* Wind10m.gif
+convert -delay 100 snow-cover_* snow-cover.gif &
+convert -delay 100 precip_* precip.gif &
+convert -delay 100 T2m_* T2m.gif &
+convert -delay 100 RH2m_* RH2m.gif &
+convert -delay 100 Wind10m_* Wind10m.gif &
+wait
 
 # Move realtime figures to repo
+echo "Phase I: organize files..."
 cp T2m-home.png $TS_DIR 
 cp Wind10m-home.png $TS_DIR 
 mv snow-cover_* $MAP_DIR
@@ -61,28 +66,33 @@ mv RH2m_* $MAP_DIR
 mv Wind10m_* $MAP_DIR
 
 cd $WORKDIR
+echo "Phase I: git push..."
 sh gitfresh.sh 
 #--------------------------------------------------------------
 #                 Second Phase: D01 D02 Maps
 #--------------------------------------------------------------
 
+echo "Phase II: plot..."
 cd $WORKDIR/ncl
-ncl 180210-plot-d02-precip.ncl
-ncl 180210-plot-d02-snow-cover.ncl
-ncl 180210-plot-d02-T2m.ncl
-ncl 180210-plot-d02-RH2m.ncl
-ncl 180210-plot-d02-UV10m.ncl
+ncl -nQ  180210-plot-d02-precip.ncl &
+ncl -nQ  180210-plot-d02-snow-cover.ncl &
+ncl -nQ  180210-plot-d02-T2m.ncl &
+ncl -nQ  180210-plot-d02-RH2m.ncl &
+ncl -nQ  180210-plot-d02-UV10m.ncl &
+wait
 
-ncl 180210-plot-d01-precip.ncl
-ncl 180210-plot-d01-snow-cover.ncl
-ncl 180210-plot-d01-T2m.ncl
-ncl 180210-plot-d01-RH2m.ncl
-ncl 180210-plot-d01-UV10m.ncl
+ncl -nQ  180210-plot-d01-precip.ncl &
+ncl -nQ  180210-plot-d01-snow-cover.ncl &
+ncl -nQ  180210-plot-d01-T2m.ncl &
+ncl -nQ  180210-plot-d01-RH2m.ncl &
+ncl -nQ  180210-plot-d01-UV10m.ncl &
+wait
 
 
 cd $WORKDIR/fig
 
 
+echo "Phase II: convert..."
 
 #for((I=0;I<=31;I++))
 #do
@@ -92,19 +102,21 @@ cd $WORKDIR/fig
 #done
 
 # convert gif
-convert -delay 100 d02_snow-cover_* d02_snow-cover.gif
-convert -delay 100 d02_precip_* d02_precip.gif
-convert -delay 100 d02_T2m_* d02_T2m.gif
-convert -delay 100 d02_RH2m_* d02_RH2m.gif
-convert -delay 100 d02_Wind10m_* d02_Wind10m.gif
+convert -delay 100 d02_snow-cover_* d02_snow-cover.gif &
+convert -delay 100 d02_precip_* d02_precip.gif &
+convert -delay 100 d02_T2m_* d02_T2m.gif &
+convert -delay 100 d02_RH2m_* d02_RH2m.gif &
+convert -delay 100 d02_Wind10m_* d02_Wind10m.gif &
 
-convert -delay 100 d01_snow-cover_* d01_snow-cover.gif
-convert -delay 100 d01_precip_* d01_precip.gif
-convert -delay 100 d01_T2m_* d01_T2m.gif
-convert -delay 100 d01_RH2m_* d01_RH2m.gif
-convert -delay 100 d01_Wind10m_* d01_Wind10m.gif
+convert -delay 100 d01_snow-cover_* d01_snow-cover.gif &
+convert -delay 100 d01_precip_* d01_precip.gif &
+convert -delay 100 d01_T2m_* d01_T2m.gif &
+convert -delay 100 d01_RH2m_* d01_RH2m.gif &
+convert -delay 100 d01_Wind10m_* d01_Wind10m.gif &
+wait
 
 
+echo "Phase II: organize files..."
 # Move realtime figures to repo
 mv d02_snow-cover_* $MAP_DIR
 mv d02_precip_* $MAP_DIR
@@ -119,6 +131,7 @@ mv d01_RH2m_* $MAP_DIR
 mv d01_Wind10m_* $MAP_DIR
 
 
+echo "Phase II: git push..."
 cd $WORKDIR
 sh gitfresh.sh 
 
