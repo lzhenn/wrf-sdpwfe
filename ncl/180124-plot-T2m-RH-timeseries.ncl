@@ -197,11 +197,12 @@ begin
   hlmkres                   = rfmkres 
   hlmkres@gsMarkerIndex     = 7          ; polymarker style
   hlmkres@gsMarkerColor     = "Red"          ; polymarker size
+  hlmkres@gsMarkerThicknessF     = 5.          ; polymarker size
 
   ; Graupel Mark Res
   gpmkres                   = rfmkres 
-  gpmkres@gsMarkerIndex     = 7          ; polymarker style
-  gpmkres@gsMarkerColor     = "skyblue"          ; polymarker size
+  gpmkres@gsMarkerIndex     = 9         ; polymarker style
+  gpmkres@gsMarkerColor     = "deepskyblue"          ; polymarker size
 
 
   hratio = 0.9
@@ -229,7 +230,27 @@ begin
           plot@$str$=gsn_add_polyline(wks,plot(1),(/ii,ii/),(/res_snow@trYMinF, res_snow@trYMaxF/),res_line)
       end if
   end do
+  txres               =  True
+  txres@txFontHeightF =  g_font         ;-- default size is HUGE!
+
+  xndc = 0.6
+  yndc = 0.5
+  txres@txJust        = "CenterLeft"
+  gsn_polymarker_ndc(wks,xndc,yndc,rfmkres)
+  gsn_text_ndc(wks,"Rain", xndc+0.015, yndc, txres)
+  
+  xndc2 = xndc+0.075
+  gsn_polymarker_ndc(wks,xndc2,yndc,snmkres)
+  gsn_text_ndc(wks,"Snow", xndc2+0.015, yndc, txres)
  
+  xndc3 = xndc2+0.08
+  gsn_polymarker_ndc(wks,xndc3,yndc,gpmkres)
+  gsn_text_ndc(wks,"Graupel", xndc3+0.015, yndc, txres)
+ 
+  xndc4 = xndc3+0.1
+  gsn_polymarker_ndc(wks,xndc4,yndc,hlmkres)
+  gsn_text_ndc(wks,"Hail", xndc4+0.015, yndc, txres)
+
   gsn_panel(wks, plot, (/2,1/), False)
 
 end
