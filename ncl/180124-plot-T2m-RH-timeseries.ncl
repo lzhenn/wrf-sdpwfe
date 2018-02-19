@@ -154,7 +154,12 @@ begin
     ctrl_var8  = wrf_user_getvar(ctrl_in,"SNOWNC", -1)  
     ctrl_var9  = wrf_user_getvar(ctrl_in,"HAILNC", -1)  
     ctrl_var10  = wrf_user_getvar(ctrl_in,"GRAUPELNC", -1)  
-    
+   
+    ctrl_var11 = wrf_user_getvar(ctrl_in,"CLDFRA", -1)
+    ctrl_var11 := ctrl_var11(:,:,cor_x,cor_y)
+    z   = wrf_user_getvar(ctrl_in,"height",-1)  ; On half (mass) levels
+    zin = z(:,:,cor_x, cor_y)
+
     ctrl_var5  = ctrl_var5*100
     ctrl_var6  = (ctrl_var6+ctrl_var7) ; Accumulate convective rainfall and non-convective rainfall
     ctrl_var6(1:lentime-1,:,:)=ctrl_var6(1:lentime-1,:,:)-ctrl_var6(0:lentime-2,:,:)
@@ -204,6 +209,13 @@ begin
   gpmkres@gsMarkerIndex     = 9         ; polymarker style
   gpmkres@gsMarkerColor     = "deepskyblue"          ; polymarker size
 
+ ; Graupel Mark Res
+  fgmkres                   = rfmkres 
+  fgmkres@gsMarkerIndex     = 2         ; polymarker style
+  fgmkres@gsMarkerColor     = "darkseagreen"          ; polymarker size
+
+
+
 
   hratio = 0.9
   do ii=0, lentime-1
@@ -224,6 +236,13 @@ begin
           str=unique_string("")
           plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, rfmkres)
       end if
+      do jj = 0, 5
+        if (zin(ii,jj) .lt. 100.0 .and. ctrl_var11(ii,jj) .gt. 0.1) then
+            str=unique_string("")
+            plot@$str$=gsn_add_polymarker(wks,plot(1), ii, res_snow@trYMaxF*hratio, fgmkres)
+            break
+        end if
+      end do
       ; Specific time marker
       if mod(ii-4, 24) .eq. 0 then 
           str=unique_string("")
@@ -233,9 +252,14 @@ begin
   txres               =  True
   txres@txFontHeightF =  g_font         ;-- default size is HUGE!
 
-  xndc = 0.6
+  xndc = 0.55
   yndc = 0.5
   txres@txJust        = "CenterLeft"
+
+  gsn_polymarker_ndc(wks,xndc,yndc,fgmkres)
+  gsn_text_ndc(wks,"Fog", xndc+0.015, yndc, txres)
+  
+  xndc=xndc+0.06
   gsn_polymarker_ndc(wks,xndc,yndc,rfmkres)
   gsn_text_ndc(wks,"Rain", xndc+0.015, yndc, txres)
   

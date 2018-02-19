@@ -65,7 +65,6 @@ begin
     cor_x=point(0,0)
     cor_y=point(0,1)
 
-
     ctrl_var1 := ctrl_var1(:,:,cor_x,cor_y)
     zin = z(:,cor_x, cor_y)
     z_raob = fspan(200.0,1000.0,17)    ; height in radiosonde
