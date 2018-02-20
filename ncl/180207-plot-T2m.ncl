@@ -153,6 +153,8 @@ res@mpInlandWaterFillColor  = "white"
   polymaxres@gsMarkerColor     = "red"          ; polymarker size
   polymaxres@gsMarkerThicknessF     = 5.          ; polymarker size
 
+  polyminres = polymaxres
+  polyminres@gsMarkerColor="blue"
 res = wrf_map_resources(ctrl_in[0],res)
 
 time_frame = 0
@@ -179,12 +181,22 @@ do while(time_frame .lt. lentime)
     dims=dimsizes(ctrl_var1(time_frame,:,:))
     var1D=ndtooned(ctrl_var1(time_frame,:,:))
     max_value=max(var1D)
+    min_value=min(var1D)
     inds = ind_resolve(maxind (var1D), dims)    ; convert 1D array back to 2D 
+    inds_min = ind_resolve(minind (var1D), dims)    ; convert 1D array back to 2D 
     ilat = inds(0,0)        ; select the latitude index where the X array is at its' maximum  
     ilon = inds(0,1)        ; select the longitude index where the X array is at its' maximum
+    ilat_min = inds_min(0,0)        ; select the latitude index where the X array is at its' maximum  
+    ilon_min = inds_min(0,1)        ; select the longitude index where the X array is at its' maximum
 
-    dum2    = gsn_add_text(wks,plot,sprintf("T2m@Home: %3.1fdegC~C~", ctrl_var1(time_frame, cor_x, cor_y))+sprintf("Max T2m: %3.1fdegC@(",ctrl_var1(time_frame, ilat, ilon))+sprintf("%5.2fE, ", lon2d(ilat, ilon))+sprintf("%5.2fN)", lat2d(ilat, ilon)),tlon,tlat,tres)
+    dum2    = gsn_add_text(wks,plot,sprintf("T2m@Home: %3.1fdegC~C~", ctrl_var1(time_frame, cor_x, cor_y))+\
+              sprintf("Max T2m: %3.1fdegC@(",ctrl_var1(time_frame, ilat, ilon))+\
+              sprintf("%5.2fE, ", lon2d(ilat, ilon))+sprintf("%5.2fN)~C~", lat2d(ilat, ilon))+\
+              sprintf("Min T2m: %3.1fdegC@(",ctrl_var1(time_frame, ilat_min, ilon_min))+\
+              sprintf("%5.2fE, ", lon2d(ilat_min, ilon_min))+sprintf("%5.2fN)~C~", lat2d(ilat_min, ilon_min))\
+              ,tlon,tlat,tres)
     dummax    = gsn_add_polymarker(wks,plot,lon2d(ilat, ilon),lat2d(ilat, ilon),polymaxres)
+    dummin    = gsn_add_polymarker(wks,plot,lon2d(ilat, ilon),lat2d(ilat, ilon),polyminres)
     
     draw(plot)
     frame(wks)
