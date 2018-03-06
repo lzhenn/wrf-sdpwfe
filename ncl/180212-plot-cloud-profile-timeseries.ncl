@@ -108,7 +108,7 @@ begin
   rh_res@tiYAxisFontHeightF = g_font
   rh_res@lbLabelBarOn = True   ; turn off the label bar
   rh_res@lbOrientation          = "vertical"
-  rh_res@gsnRightString = "" 
+  rh_res@gsnRightString = systemfunc("date")+ " ALL Updated" 
   rh_res@gsnMaximize          = True
   rh_res@cnLevelSelectionMode = "ExplicitLevels"   ; set manual contour levels
   rh_res@cnLevels = fspan(0,1,21) 
