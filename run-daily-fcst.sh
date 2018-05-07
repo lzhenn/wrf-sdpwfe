@@ -2,7 +2,7 @@
 
 LID=`date -d '1 days ago' +%Y%m%d`
 LID_NLS=`date -d '1 days ago' +%Y-%m-%d`
-LID_NLE=`date -d '-3 days ago' +%Y-%m-%d` # 4 days later, for forecast
+LID_NLE=`date -d '-2 days ago' +%Y-%m-%d` # 3 days later, for forecast
 
 WPSDIR=/home/lzhenn/package/WPS
 WRFDIR=/home/lzhenn/array/lzhenn/WRFV3/run
