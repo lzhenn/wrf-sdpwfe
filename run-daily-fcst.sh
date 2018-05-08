@@ -55,14 +55,14 @@ echo "Working on WRF->REAL..."
 cd $WRFDIR
 
 YYYY_NLS=`date -d '1 days ago' +%Y`
-YYYY_NLE=`date -d '-3 days ago' +%Y` # 4 days later, for forecast
+YYYY_NLE=`date -d '-2 days ago' +%Y` # 3 days later, for forecast
 
 MM_NLS=`date -d '1 days ago' +%m`
-MM_NLE=`date -d '-3 days ago' +%m` # 4 days later, for forecast
+MM_NLE=`date -d '-2 days ago' +%m` # 3 days later, for forecast
   
 
 DD_NLS=`date -d '1 days ago' +%d`
-DD_NLE=`date -d '-3 days ago' +%d` # 4 days later, for forecast
+DD_NLE=`date -d '-2 days ago' +%d` # 3 days later, for forecast
 
 
 sed -i "/start_year/s/^.*$/ start_year                          = ${YYYY_NLS}, ${YYYY_NLS}, ${YYYY_NLS}, ${YYYY_NLS},/g" namelist.input
