@@ -16,7 +16,7 @@ GFSDIR=/home/lzhenn/array/lzhenn/gfs_fcst/$LID
 
 echo "Forecast ${LID_NLS} to ${LID_NLE}"
 echo "Fetching GFS data..."
-#python fetch_gfs.py
+python fetch_gfs.py
 
 ############## WPS ##################
 cd $WPSDIR 
