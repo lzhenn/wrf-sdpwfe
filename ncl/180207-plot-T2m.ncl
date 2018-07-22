@@ -41,7 +41,7 @@ begin
               
 
     lentime=dimsizes(xtime)
-  	ctrl_var1_0  = wrf_user_getvar(ctrl_in,"TSK", -1)  
+  	ctrl_var1_0  = wrf_user_getvar(ctrl_in,"T2", -1)  
 	ctrl_land  = wrf_user_getvar(ctrl_in,"XLAND", 1)  
     
 

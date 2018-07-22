@@ -41,7 +41,7 @@ begin
 	setfileoption("nc","SuppressClose",False) ; close too many files
 	ListSetType (ctrl_in, "cat")             ; concatenate or "merge" (default)
 
-	ctrl_var1_0  = wrf_user_getvar(ctrl_in,"TSK", -1)  
+	ctrl_var1_0  = wrf_user_getvar(ctrl_in,"T2", -1)  
 	ctrl_var2  = wrf_user_getvar(ctrl_in,"Q2", -1)  
 	ctrl_var3  = wrf_user_getvar(ctrl_in,"PSFC", -1)  
     
