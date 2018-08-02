@@ -38,14 +38,15 @@ convert T2m-home.png -bordercolor white -trim T2m-home.png
 convert Wind10m-home.png -bordercolor white -trim Wind10m-home.png
 convert profile-home.png -bordercolor white -trim profile-home.png
 convert cloud-profile-home.png -bordercolor white -trim cloud-profile-home.png
-
-
-#for((I=0;I<=31;I++))
-#do
-#    TF=$(expr $I \* 3)
-#    TFSTMP=`printf "%.3d" $TF`
-#    convert snow-cover_${TFSTMP}H.png -bordercolor white -trim snow-cover_${TFSTMP}H.png
-#done
+for((I=0;I<=31;I++))
+do
+    TF=$(expr $I \* 3)
+    TFSTMP=`printf "%.3d" $TF`
+    convert -trim +repage -bordercolor white -background white -flatten snow-cover_${TFSTMP}H.png snow-cover_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten precip_${TFSTMP}H.png precip_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten T2m_${TFSTMP}H.png T2m_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten RH2m_${TFSTMP}H.png RH2m_${TFSTMP}H.png
+done
 
 # convert gif
 convert -delay 100 snow-cover_* snow-cover.gif &
@@ -53,6 +54,13 @@ convert -delay 100 precip_* precip.gif &
 convert -delay 100 T2m_* T2m.gif &
 convert -delay 100 RH2m_* RH2m.gif &
 convert -delay 100 Wind10m_* Wind10m.gif &
+
+#compress gif
+convert snow-cover.gif -fuzz 5% -layers Optimize snow-cover.gif
+convert precip.gif -fuzz 5% -layers Optimize precip.gif
+convert T2m.gif -fuzz 5% -layers Optimize T2m.gif
+convert RH2m.gif -fuzz 5% -layers Optimize RH2m.gif
+convert Wind10m.gif -fuzz 5% -layers Optimize Wind10m.gif
 wait
 
 # Move realtime figures to repo
@@ -133,6 +141,6 @@ mv d01_Wind10m_* $MAP_DIR
 
 echo "Phase II: git push..."
 cd $WORKDIR
-sh gitfresh.sh 
+#sh gitfresh.sh 
 
 
