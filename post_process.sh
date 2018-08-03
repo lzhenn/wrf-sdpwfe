@@ -34,11 +34,11 @@ cd $WORKDIR/fig
 echo "Phase I: convert..."
 
 # Cut borders
-convert T2m-home.png -bordercolor white -trim T2m-home.png
-convert Wind10m-home.png -bordercolor white -trim Wind10m-home.png
-convert profile-home.png -bordercolor white -trim profile-home.png
-convert cloud-profile-home.png -bordercolor white -trim cloud-profile-home.png
-for((I=0;I<=31;I++))
+convert -trim +repage -bordercolor white -background white -flatten T2m-home.png  T2m-home.png
+convert -trim +repage -bordercolor white -background white -flatten Wind10m-home.png Wind10m-home.png
+convert -trim +repage -bordercolor white -background white -flatten profile-home.png profile-home.png
+convert -trim +repage -bordercolor white -background white -flatten cloud-profile-home.png cloud-profile-home.png
+for((I=0;I<=24;I++))
 do
     TF=$(expr $I \* 3)
     TFSTMP=`printf "%.3d" $TF`
@@ -46,6 +46,7 @@ do
     convert -trim +repage -bordercolor white -background white -flatten precip_${TFSTMP}H.png precip_${TFSTMP}H.png
     convert -trim +repage -bordercolor white -background white -flatten T2m_${TFSTMP}H.png T2m_${TFSTMP}H.png
     convert -trim +repage -bordercolor white -background white -flatten RH2m_${TFSTMP}H.png RH2m_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten Wind10m_${TFSTMP}H.png Wind10m_${TFSTMP}H.png
 done
 
 # convert gif
@@ -102,12 +103,23 @@ cd $WORKDIR/fig
 
 echo "Phase II: convert..."
 
-#for((I=0;I<=31;I++))
-#do
-#    TF=$(expr $I \* 3)
-#    TFSTMP=`printf "%.3d" $TF`
-#    convert snow-cover_${TFSTMP}H.png -bordercolor white -trim snow-cover_${TFSTMP}H.png
-#done
+for((I=0;I<=24;I++))
+do
+    TF=$(expr $I \* 3)
+    TFSTMP=`printf "%.3d" $TF`
+
+    convert -trim +repage -bordercolor white -background white -flatten d01_snow-cover_${TFSTMP}H.png d01_snow-cover_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d01_precip_${TFSTMP}H.png d01_precip_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d01_T2m_${TFSTMP}H.png d01_T2m_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d01_RH2m_${TFSTMP}H.png d01_RH2m_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d01_Wind10m_${TFSTMP}H.png d01_Wind10m_${TFSTMP}H.png
+
+    convert -trim +repage -bordercolor white -background white -flatten d02_snow-cover_${TFSTMP}H.png d02_snow-cover_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d02_precip_${TFSTMP}H.png d02_precip_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d02_T2m_${TFSTMP}H.png d02_T2m_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d02_RH2m_${TFSTMP}H.png d02_RH2m_${TFSTMP}H.png
+    convert -trim +repage -bordercolor white -background white -flatten d02_Wind10m_${TFSTMP}H.png d02_Wind10m_${TFSTMP}H.png
+done
 
 # convert gif
 convert -delay 100 d02_snow-cover_* d02_snow-cover.gif &
@@ -141,6 +153,6 @@ mv d01_Wind10m_* $MAP_DIR
 
 echo "Phase II: git push..."
 cd $WORKDIR
-#sh gitfresh.sh 
+sh gitfresh.sh 
 
 
