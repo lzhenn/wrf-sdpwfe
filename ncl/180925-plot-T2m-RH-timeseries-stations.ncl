@@ -78,10 +78,12 @@ begin
     ; point(i,j) --- i -> sta_list; j -> 0:x; 1:y.
     point=getind_latlon2d(lat2d,lon2d,lat_list,lon_list)
     
-    lb_bot=point(0:n_,0)
+    lb_bot=lat_list
+    lb_top=lon_list
     
     do ii = 0, n_sta-1
-        min(ctrl_var1(:,cor_x,cor_y))-2
+        lb_bot(ii)=min(ctrl_var1(:,point(ii,0),point(ii,1)))-2
+        lb_top(ii)=max(ctrl_var1(:,point(ii,0),point(ii,1)))+2
     end do
 ;**********************************************************************************************
 ;MISSION.3      Display timeseries 
@@ -108,8 +110,8 @@ begin
     res@vpHeightF= 0.2
 
 
-    res@trYMinF            = min(ctrl_var1(:,cor_x,cor_y))-2                ; Y axis limits
-    res@trYMaxF            = max(ctrl_var1(:,cor_x,cor_y))+2
+    res@trYMinF            = min(lb_bot)                ; Y axis limits
+    res@trYMaxF            = max(lb_top)
     res@tmXBOn = True 
     res@tmXBMinorOn = False
     res@tmXTOn = False
@@ -142,7 +144,7 @@ begin
     delete([/resR@trYMinF, resR@trYMaxF, resR@tiYAxisString/])
     resR@xyLineColors:="darkgreen"
     resR@tiYAxisString="RH (%)"
-    plot(0)  = gsn_csm_xy2 (wks, ispan(0,lentime-1,1),ctrl_var1(:,cor_x,cor_y),ctrl_var4(:,cor_x,cor_y),res, resR)   ; create plot
+    plot(0)  = gsn_csm_xy (wks, ispan(0,lentime-1,1),ctrl_var1(:,cor_x,cor_y),res)   ; create plot
     
     res_line=True
     res_line@gsLineDashPattern=1.
