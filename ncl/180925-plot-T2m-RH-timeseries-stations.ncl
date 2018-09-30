@@ -56,7 +56,7 @@ begin
     time0 = wrf_user_getvar(ctrl_in,"Times", -1)
     xtime = wrf_times_c( time0, 1 ) 
     xtime = xtime+8 
-
+    
     lc_date=cd_calendar(xtime, 0)
     year   = tointeger(lc_date(:,0))    ; Convert to integer for
     month  = tointeger(lc_date(:,1))    ; use sprinti 
@@ -80,10 +80,16 @@ begin
     
     lb_bot=lat_list
     lb_top=lon_list
-    
+    data=ctrl_var1(:,0,0:n_sta-1)
+    data!1="sta"
+    data!0="time"
+    data&sta=sta_names
+    data&time=xtime
+    data:=data({sta|:},{time|:})
     do ii = 0, n_sta-1
         lb_bot(ii)=min(ctrl_var1(:,point(ii,0),point(ii,1)))-2
         lb_top(ii)=max(ctrl_var1(:,point(ii,0),point(ii,1)))+2
+        data(ii,:)=(/ctrl_var1(:,point(ii,0),point(ii,1))/)
     end do
 ;**********************************************************************************************
 ;MISSION.3      Display timeseries 
@@ -144,8 +150,7 @@ begin
     delete([/resR@trYMinF, resR@trYMaxF, resR@tiYAxisString/])
     resR@xyLineColors:="darkgreen"
     resR@tiYAxisString="RH (%)"
-    plot(0)  = gsn_csm_xy (wks, ispan(0,lentime-1,1),ctrl_var1(:,cor_x,cor_y),res)   ; create plot
-    
+    plot(0)  = gsn_csm_xy (wks, ispan(0,lentime-1,1),data,res)   ; create plot
     res_line=True
     res_line@gsLineDashPattern=1.
     do ii=0, lentime-1
@@ -157,5 +162,7 @@ begin
 
     str=unique_string("")
     plot@$str$=gsn_add_polyline(wks,plot(0),(/ii,ii/),(/res@trYMinF, res@trYMaxF/),res_line)
+    draw(plot)
+    frame(wks)
 
 end
