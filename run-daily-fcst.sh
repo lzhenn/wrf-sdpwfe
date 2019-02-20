@@ -81,7 +81,8 @@ ln -sf $WPSDIR/met_em.d0* ./
 ./real.exe >& $LOGFILE
 
 echo "Working on WRF->WRF..."
-mpirun -np 18 ./wrf.exe
+# due to regulation, the wrf run procedure is commentted out on Feb 20, 2019
+#mpirun -np 18 ./wrf.exe
 
 ############## POST-PROCESS ##################
 echo "Post-processing..."
